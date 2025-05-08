@@ -38,12 +38,12 @@ add_library (
 
 target_include_directories (
     ${ML_MODULE_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/onnxruntime/tempbuild/native/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/ml/onnx/inc
     ${CMAKE_CURRENT_SOURCE_DIR}/third_party/
     ${CMAKE_CURRENT_SOURCE_DIR}/src/utils/inc
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ml/inc
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/ml/onnx/inc
     ${CMAKE_CURRENT_SOURCE_DIR}/third_party/json
-    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/onnxruntime/build/native/include
 )
 
 target_compile_definitions(${ML_MODULE_NAME} PRIVATE BRAINFLOW_VERSION=${BRAINFLOW_VERSION})

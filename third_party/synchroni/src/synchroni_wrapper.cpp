@@ -20,6 +20,7 @@ using namespace std;
 using namespace sensor;
 
 const int PACKAGE_COUNT = 1;
+const int MAX_PACKAGE_COUNT = 250 * 10;
 
 class SynchroniBoardWrapper : public sensor::SensorProfileDelegate,
                               public enable_shared_from_this<SynchroniBoardWrapper>
@@ -55,8 +56,12 @@ public:
     virtual void onStateChange (
         std::shared_ptr<sensor::SensorProfile> profile, sensor::BLEDevice::State newState)
     {
-
-        // throw BrainFlowException ("failed to get board info", res);
+        if (newState == BLEDevice::State::Disconnected) {
+            dataMutex.lock();
+            lastEEG.clear();
+            lastECG.clear();
+            dataMutex.unlock();
+        }   
     }
 
     virtual void onSensorNotifyData (
@@ -69,13 +74,15 @@ public:
         if (rawData.dataType == sensor::SensorData::NTF_EEG)
         {
             dataMutex.lock ();
-            lastEEG.push_back (rawData);
+            if (lastEEG.size() < MAX_PACKAGE_COUNT)
+                lastEEG.push_back (rawData);
             dataMutex.unlock ();
         }
         if (rawData.dataType == sensor::SensorData::NTF_ECG)
         {
             dataMutex.lock ();
-            lastECG.push_back (rawData);
+            if (lastECG.size() < MAX_PACKAGE_COUNT)
+                lastECG.push_back (rawData);
             dataMutex.unlock ();
         }
     }
